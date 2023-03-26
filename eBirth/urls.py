@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('eBirth_basic.urls', namespace='basic')),
+    path('auth/', include('eBirth_auth.urls', namespace='auth')),
 ]
 
 if settings.DEBUG:

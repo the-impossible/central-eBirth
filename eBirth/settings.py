@@ -45,6 +45,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "eBirth.urls"
+AUTH_USER_MODEL = "eBirth_auth.User"
 
 TEMPLATES = [
     {
@@ -106,7 +107,7 @@ MESSAGE_TAGS = {
 }
 
 # CRISPY FORM
-CRISPY_TEMPLATES_PACK = 'bootstrap4'
+CRISPY_TEMPLATES_PACK = 'bootstrap5'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -122,3 +123,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'Static')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTHENTICATION_BACKENDS = [
+    "eBirth_auth.backends.CertModelBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]

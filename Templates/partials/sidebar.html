@@ -1,0 +1,122 @@
+ {% load static %}
+ <!-- Menu -->
+ <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo">
+      <a href="{% url 'basic:home' %}" class="app-brand-link">
+        <span class="app-brand-logo demo">
+            <img src="{% static 'img/logo.png' %}" width="80%" alt="">
+        </span>
+      </a>
+
+      <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+      </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner py-1">
+      <!-- Dashboard -->
+      <li class="menu-item active">
+        <a href="{% url 'auth:dashboard' %}" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-home-circle"></i>
+          <div data-i18n="Analytics">Dashboard</div>
+        </a>
+      </li>
+    {% if request.user.is_hospital %}
+
+    <li class="menu-header small text-uppercase">
+      <span class="menu-header-text">Birth Registration</span>
+    </li>
+    <li class="menu-item">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-dock-top"></i>
+        <div data-i18n="Account Settings">Registrations</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a href="pages-account-settings-account.html" class="menu-link">
+            <div data-i18n="Account">Birth Registration</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="pages-account-settings-notifications.html" class="menu-link">
+            <div data-i18n="Notifications">Manage Registration</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+      <!-- Components -->
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Administrators</span></li>
+      <!-- User interface -->
+    <li class="menu-item">
+    <a href="javascript:void(0)" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+        <div data-i18n="User interface">Accounts</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+        <a href="ui-accordion.html" class="menu-link">
+            <div data-i18n="Accordion">Create Account</div>
+        </a>
+        </li>
+        <li class="menu-item">
+        <a href="ui-alerts.html" class="menu-link">
+            <div data-i18n="Alerts">Manage Accounts</div>
+        </a>
+        </li>
+    </ul>
+    </li>
+
+    <!-- Forms & Tables -->
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Certificate &amp; Issuance</span></li>
+    <!-- Forms -->
+    <li class="menu-item">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-detail"></i>
+        <div data-i18n="Form Elements">Certificates</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item">
+        <a href="forms-basic-inputs.html" class="menu-link">
+            <div data-i18n="Basic Inputs">Search Certificate</div>
+        </a>
+        </li>
+        <li class="menu-item">
+        <a href="forms-input-groups.html" class="menu-link">
+            <div data-i18n="Input groups">Manage Certificate</div>
+        </a>
+        </li>
+    </ul>
+    </li>
+
+    <!-- Misc -->
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Settings</span></li>
+    <li class="menu-item">
+    <a
+        href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
+        target="_blank"
+        class="menu-link"
+    >
+        <i class="menu-icon tf-icons bx bx-support"></i>
+        <div data-i18n="Support">Hospital Profile</div>
+    </a>
+    </li>
+    <li class="menu-item">
+        <a href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/" target="_blank" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-file"></i>
+            <div data-i18n="Documentation">Account Profile</div>
+        </a>
+    </li>
+    {% else %}
+
+    {% endif %}
+    <li class="menu-item">
+        <a href="tml-admin-template/documentation/" target="_blank" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-file"></i>
+            <div data-i18n="Documentation">Logout</div>
+        </a>
+    </li>
+    </ul>
+</aside>
+<!-- / Menu -->
