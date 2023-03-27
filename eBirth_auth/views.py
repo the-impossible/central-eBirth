@@ -30,7 +30,6 @@ class LoginView(View):
                     messages.success(request, f"You are now signed in {user}")
 
                     nxt  = request.GET.get('next', None)
-
                     if nxt is None:
                         return redirect('auth:dashboard')
                     return redirect(self.request.GET.get('next', None))

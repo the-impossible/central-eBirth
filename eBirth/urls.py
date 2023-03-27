@@ -7,6 +7,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('eBirth_basic.urls', namespace='basic')),
     path('auth/', include('eBirth_auth.urls', namespace='auth')),
+    path('reg/', include('eBirth_reg.urls', namespace='reg')),
 ]
 
 if settings.DEBUG:

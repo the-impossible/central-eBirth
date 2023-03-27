@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "eBirth_auth",
     "eBirth_basic",
+    "eBirth_reg",
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -107,7 +110,8 @@ MESSAGE_TAGS = {
 }
 
 # CRISPY FORM
-CRISPY_TEMPLATES_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -128,3 +132,5 @@ AUTHENTICATION_BACKENDS = [
     "eBirth_auth.backends.CertModelBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+LOGIN_URL = 'auth:login'

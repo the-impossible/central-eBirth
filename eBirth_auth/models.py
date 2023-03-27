@@ -16,9 +16,13 @@ class UserManager(BaseUserManager):
         if password is None:
             raise ValueError('Password is required!')
 
-        if cert_no is not None:
+        if cert_no and email:
             user = self.model(
                 email = self.normalize_email(email),
+                cert_no = cert_no.upper().strip(),
+            )
+        elif cert_no is not None:
+            user = self.model(
                 cert_no = cert_no.upper().strip(),
             )
         elif email is not None:
@@ -62,6 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_hospital = models.BooleanField(default=False)
+    is_hospital_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
 

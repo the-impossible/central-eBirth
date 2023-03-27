@@ -11,6 +11,8 @@ xhtml2pdf = "*"
 python-decouple = "*"
 pylint-django = "*"
 pylint = "*"
+crispy-bootstrap5 = "*"
+crispy-bootstrap4 = "*"
 
 [dev-packages]
 
