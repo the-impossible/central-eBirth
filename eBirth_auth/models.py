@@ -57,7 +57,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    cert_no = models.CharField(max_length=10, db_index=True, unique=True, blank=True)
+    cert_no = models.CharField(max_length=10, db_index=True, unique=True, blank=True, null=True)
     email = models.CharField(max_length=100, db_index=True, unique=True, verbose_name='email address', blank=True, null=True)
 
     date_joined = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)
@@ -75,7 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        if self.is_hospital or self.is_staff:
+        if self.is_hospital or self.is_staff or self.is_hospital_admin:
             return f'{self.email}'
         else:
             return f'{self.cert_no}'

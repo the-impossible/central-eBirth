@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.messages.views import SuccessMessageMixin
 from random import choice, randint, shuffle
 from django.contrib import messages
@@ -13,6 +13,9 @@ from eBirth_reg.models import (
 
 from eBirth_auth.models import (
     User,
+)
+from eBirth_auth.forms import (
+    UserRegistrationForm,
 )
 
 from eBirth_reg.forms import (
@@ -77,3 +80,50 @@ class BirthRegistrationView(SuccessMessageMixin, CreateView):
             messages.error(self.request, "Unable to get hospital profile!")
             return super().form_invalid(form)
 
+class ManageBirthRegistrationView(ListView):
+    template_name = "auth/manage_reg.html"
+
+    def get_queryset(self):
+        hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+        return BirthRegistration.objects.filter(place_of_birth=hospital)
+
+class EditBirthRegistrationView(SuccessMessageMixin, UpdateView):
+    model = BirthRegistration
+    form_class = BirthRegistrationForm
+    success_message = "Registration has been edited successfully!"
+
+    template_name = "auth/edit_birth_reg.html"
+
+    def get_success_url(self):
+        return reverse("reg:manage_birth_reg")
+
+class DeleteBirthRegistrationView(SuccessMessageMixin, DeleteView):
+    model = BirthRegistration
+    success_message = "Registration has been deleted successfully!"
+
+    def form_valid(self, form):
+        user = User.objects.get(cert_no=self.request.POST.get('cert_no'))
+        user.delete()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("reg:manage_birth_reg")
+
+class AdminRegistrationView(SuccessMessageMixin, CreateView):
+    model = User
+    form_class = UserRegistrationForm
+    template_name = "auth/admin_reg.html"
+    success_message = "Admin Account created!"
+
+    def get_success_url(self):
+        return reverse("reg:admin_reg")
+
+    def form_valid(self, form):
+        form.instance.is_hospital_admin = True
+        form = super().form_valid(form)
+
+        hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+        HospitalAdminProfile.objects.create(user_id=self.object, hospital_id=hospital)
+
+        return form

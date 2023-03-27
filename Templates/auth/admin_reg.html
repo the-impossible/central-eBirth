@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Admin Register{% endblock title %}
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        {% include 'partials/sidebar.html' %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+	        {% block nav %} {% include 'partials/auth_nav.html' %} {% endblock %}
+
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+
+              {% include 'partials/messages.html' %}
+
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'auth:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active"><a href="{% url 'reg:birth_reg' %}">Admin Registration</a></li>
+              </ol>
+
+              <!-- Basic Layout & Basic with Icons -->
+              <div class="row">
+                <!-- Basic with Icons -->
+                <div class="col-xxl">
+                  <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                      <h5 class="mb-0">Admin Registration</h5>
+                      <small class="text-muted float-end">admin registration</small>
+                    </div>
+                    <div class="card-body">
+                      <form method="POST">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                          <label class="col-sm-2 col-form-label" for="basic-icon-default-fullname">Email <span class="asteriskField">*</span></label>
+                          <div class="col-sm-10">
+                            <div class="input-group input-group-merge">
+                              <span id="basic-icon-default-fullname2" class="input-group-text"
+                                ><i class="bx bx-user"></i
+                              ></span>
+                              {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                              <div class="alert alert-danger mt-2" role="alert">
+                                {{ form.email.errors }}
+                              </div>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <label class="col-sm-2 col-form-label" for="basic-icon-default-fullname">Password <span class="asteriskField">*</span></label>
+                          <div class="col-sm-10 form-password-toggle">
+                            <div class="input-group input-group-merge">
+                              <span id="basic-icon-default-fullname2" class="input-group-text"
+                              ><i class="bx bx-user"></i
+                            ></span>
+                              {{ form.password }}
+                              <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                            </div>
+                            {% if form.password.errors %}
+                              <div class="alert alert-danger mt-2" role="alert">
+                                {{ form.password.errors }}
+                              </div>
+                            {% endif %}
+                          </div>
+                        </div>
+
+                        <div class="row justify-content-end">
+                          <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                          </div>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            {% include 'partials/auth_footer.html' %}
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+    <!-- Core JS -->
+    {% include 'partials/auth_script.html' %}
+
+{% endblock body %}

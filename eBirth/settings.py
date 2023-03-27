@@ -3,6 +3,9 @@ from pathlib import Path
 import os
 from decouple import config
 from django.contrib import messages
+import datetime
+from django.conf import settings
+from django.utils.timezone import make_aware
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -134,3 +137,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = 'auth:login'
+
+USE_TZ = False
