@@ -47,3 +47,26 @@ class UserRegistrationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email', 'password',)
+
+class EditAdminForm(forms.ModelForm):
+
+    email = forms.CharField(help_text='Enter email',widget=forms.TextInput(
+        attrs={
+            'class':'form-control',
+            'type':'email',
+        }
+    ))
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        check = User.objects.filter(email=email)
+        if self.instance:
+            check = check.exclude(pk=self.instance.pk)
+        if check.exists():
+            raise forms.ValidationError('Email Already taken!')
+
+        return email
+
+    class Meta:
+        model = User
+        fields = ('email',)

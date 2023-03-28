@@ -16,6 +16,7 @@ from eBirth_auth.models import (
 )
 from eBirth_auth.forms import (
     UserRegistrationForm,
+    EditAdminForm,
 )
 
 from eBirth_reg.forms import (
@@ -127,3 +128,28 @@ class AdminRegistrationView(SuccessMessageMixin, CreateView):
         HospitalAdminProfile.objects.create(user_id=self.object, hospital_id=hospital)
 
         return form
+
+class ManageAdministratorsView(ListView):
+    template_name = "auth/manage_admin.html"
+
+    def get_queryset(self):
+        hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+        return HospitalAdminProfile.objects.filter(hospital_id=hospital)
+
+class DeleteAdministratorView(SuccessMessageMixin, DeleteView):
+    model = User
+    success_message = "Administrator has been deleted!"
+
+    def get_success_url(self):
+        return reverse("reg:manage_admin")
+
+class EditAdminView(SuccessMessageMixin, UpdateView):
+    model = User
+    form_class = EditAdminForm
+    success_message = "Admin account has been edited successfully!"
+
+    template_name = "auth/edit_admin.html"
+
+    def get_success_url(self):
+        return reverse("reg:manage_admin")
+
