@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from django.shortcuts import reverse
 
 # My app imports
 from eBirth_auth.models import (
@@ -12,9 +13,15 @@ class HospitalProfile(models.Model):
     user_id = models.ForeignKey(to=User, on_delete=models.CASCADE)
     hospital_name = models.CharField(max_length=100)
     hospital_address = models.CharField(max_length=500)
+    pic = models.ImageField(null=True, blank=True, upload_to='uploads/')
 
     def __str__(self):
         return self.hospital_name
+
+    def get_absolute_url(self):
+        return reverse("reg:hospital_profile", kwargs={
+            'pk':self.user_id.user_id
+        })
 
     class Meta:
         db_table = 'Hospital Profile'

@@ -44,7 +44,7 @@
                         <th>Father Name</th>
                         <th>Mother Name</th>
                         <th>Weight</th>
-                        <th>Actions</th>
+                        <th class="text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
@@ -58,6 +58,7 @@
                         <td>{{object.mother_name}}</td>
                         <td>{{object.weight}}</td>
                         <td>
+                          <a class="btn btn-sm btn-info" href="{% url 'reg:certificate' object.pk %}"><i class="bx bx-doc me-1"></i> Certificate</a>
                           <a class="btn btn-sm btn-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#{{object.certificate_num}}"><i class="bx bx-trash me-1"></i> Delete</a>
                           <div class="modal fade" id="{{object.certificate_num}}" style="display: none;" aria-hidden="true">
                             <div class="modal-dialog" role="document">

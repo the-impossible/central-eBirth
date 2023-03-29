@@ -10,6 +10,11 @@ from eBirth_reg.views import (
     ManageAdministratorsView,
     DeleteAdministratorView,
     EditAdminView,
+
+    CertificateView,
+
+    EditHospitalProfileView,
+    AccountProfileView,
 )
 
 app_name = "reg"
@@ -24,5 +29,10 @@ urlpatterns = [
     path('manage_admin', ManageAdministratorsView.as_view(), name="manage_admin"),
     path('delete_admin/<str:pk>', DeleteAdministratorView.as_view(), name="delete_admin"),
     path('edit_admin/<str:pk>', EditAdminView.as_view(), name="edit_admin"),
+
+    path('certificate/<str:pk>', CertificateView.as_view(), name="certificate"),
+
+    path('hospital_profile/<str:pk>', EditHospitalProfileView.as_view(), name="hospital_profile"),
+    path('account_profile/<str:pk>', AccountProfileView.as_view(), name="account_profile"),
 ]
 

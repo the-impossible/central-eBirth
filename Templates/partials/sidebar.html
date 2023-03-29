@@ -68,39 +68,10 @@
     </ul>
     </li>
 
-    <!-- Forms & Tables -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Certificate &amp; Issuance</span></li>
-    <!-- Forms -->
-    <li class="menu-item">
-    <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-detail"></i>
-        <div data-i18n="Form Elements">Certificates</div>
-    </a>
-    <ul class="menu-sub">
-        <li class="menu-item">
-        <a href="forms-basic-inputs.html" class="menu-link">
-            <div data-i18n="Basic Inputs">Search Certificate</div>
-        </a>
-        </li>
-        <li class="menu-item">
-        <a href="forms-input-groups.html" class="menu-link">
-            <div data-i18n="Input groups">Manage Certificate</div>
-        </a>
-        </li>
-    </ul>
-    </li>
-
     <!-- Misc -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Settings</span></li>
     <li class="menu-item">
-    <a
-        href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-        target="_blank"
-        class="menu-link"
-    >
-        <i class="menu-icon tf-icons bx bx-support"></i>
-        <div data-i18n="Support">Hospital Profile</div>
-    </a>
+    <a href="{% url 'reg:hospital_profile' request.user.user_id %}" class="menu-link"> <i class="menu-icon tf-icons bx bx-support"></i> <div data-i18n="Support">Hospital Profile</div></a>
     </li>
     <li class="menu-item">
         <a href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/" target="_blank" class="menu-link">

@@ -59,6 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     cert_no = models.CharField(max_length=10, db_index=True, unique=True, blank=True, null=True)
     email = models.CharField(max_length=100, db_index=True, unique=True, verbose_name='email address', blank=True, null=True)
+    pic = models.ImageField(null=True, blank=True, upload_to='uploads/')
 
     date_joined = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last_login', auto_now=True, null=True)

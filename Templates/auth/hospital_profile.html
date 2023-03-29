@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Hospital Profile{% endblock title %}
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        {% include 'partials/sidebar.html' %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+	        {% block nav %} {% include 'partials/auth_nav.html' %} {% endblock %}
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              {% include 'partials/messages.html' %}
+
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'auth:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active"><a>Hospital Profile</a></li>
+              </ol>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                    <li class="nav-item">
+                      <a class="nav-link active" href="javascript:void(0);"><i class="bx bx-user me-1"></i> Hospital Profile</a>
+                    </li>
+                  </ul>
+
+                  <div class="card mb-4">
+                    <h5 class="card-header">Profile Details</h5>
+                    <!-- Account -->
+                    <div class="card-body">
+                      <div class="d-flex align-items-start align-items-sm-center gap-4">
+                        {% if object.pic %}
+                        <img src=" {{ object.pic.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                        {% else %}
+                        <p class="badge bg-label-warning">No signature upload!</p>
+                        {% endif %}
+                        {% comment %}
+                        <div class="button-wrapper">
+                          <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+                            <span class="d-none d-sm-block">Upload new Signature</span>
+                            <i class="bx bx-upload d-block d-sm-none"></i>
+                            <input
+                              type="file"
+                              id="upload"
+                              class="account-file-input"
+                              hidden
+                              accept="image/png, image/jpeg"
+                            />
+                          </label>
+
+                           <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                            <i class="bx bx-reset d-block d-sm-none"></i>
+                            <span class="d-none d-sm-block">Reset</span>
+                          </button>
+                          <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
+
+                        </div>
+                        {% endcomment %}
+                      </div>
+                    </div>
+                    <hr class="my-0" />
+                    <div class="card-body">
+                      <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                          <div class="mb-3 col-md-6">
+                            <label for="firstName" class="form-label">Hospital Name  <span class="asteriskField">*</span> </label>
+                            {{ form.hospital_name}}
+                            {% if form.hospital_name.errors %}
+                              <div class="alert alert-danger mt-2" role="alert">
+                                {{ form.hospital_name.errors }}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <div class="mb-3 col-md-6">
+                            <label for="lastName" class="form-label">Signature (Allowed: JPG or PNG) </label>
+                            {{ form.pic}}
+                            {% if form.pic.errors %}
+                              <div class="alert alert-danger mt-2" role="alert">
+                                {{ form.pic.errors }}
+                              </div>
+                            {% endif %}
+
+                          </div>
+
+                          <div class="mb-3 col-md-12">
+                            <label for="lastName" class="form-label">hospital Address  <span class="asteriskField">*</span></label>
+                            {{ form.hospital_address}}
+                            {% if form.hospital_address.errors %}
+                              <div class="alert alert-danger mt-2" role="alert">
+                                {{ form.hospital_address.errors }}
+                              </div>
+                            {% endif %}
+                          </div>
+
+                        </div>
+                        <div class="mt-2">
+                          <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+              {% include 'partials/auth_footer.html' %}
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Core JS -->
+
+{% include 'partials/auth_script.html' %}
+
+{% endblock body %}

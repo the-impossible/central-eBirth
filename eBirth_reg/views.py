@@ -20,7 +20,8 @@ from eBirth_auth.forms import (
 )
 
 from eBirth_reg.forms import (
-    BirthRegistrationForm
+    BirthRegistrationForm,
+    HospitalProfileForm,
 )
 
 DEFAULT_PASSWORD = '12345678'
@@ -153,3 +154,30 @@ class EditAdminView(SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse("reg:manage_admin")
 
+class CertificateView(SuccessMessageMixin, DetailView):
+    model = BirthRegistration
+
+    template_name = "auth/view_certificate.html"
+
+class EditHospitalProfileView(SuccessMessageMixin, UpdateView):
+    model = HospitalProfile
+    form_class = HospitalProfileForm
+    success_message = "Hospital profile has been updated successfully!"
+    hospital_id = None
+
+    template_name = "auth/hospital_profile.html"
+
+    def get_object(self):
+        return HospitalProfile.objects.get(hospital_id=HospitalProfile.objects.get(user_id=self.kwargs['pk']).hospital_id)
+
+
+class AccountProfileView(SuccessMessageMixin, UpdateView):
+    model = HospitalProfile
+    form_class = HospitalProfileForm
+    success_message = "Hospital profile has been updated successfully!"
+    hospital_id = None
+
+    template_name = "auth/hospital_profile.html"
+
+    def get_object(self):
+        return HospitalProfile.objects.get(hospital_id=HospitalProfile.objects.get(user_id=self.kwargs['pk']).hospital_id)
