@@ -33,6 +33,7 @@ class BirthRegistrationForm(forms.ModelForm):
     weight = forms.CharField(help_text='Enter child birth weight',widget=forms.TextInput(
         attrs={
             'class':'form-control',
+            'type':'number',
         }
     ))
 

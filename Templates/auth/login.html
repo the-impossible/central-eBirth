@@ -4,7 +4,7 @@
 {% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
 {% block body %}
     <!-- Content -->
-y    <div class="container-xxl">
+    <div class="container-xxl">
       <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner">
           {% include 'partials/messages.html' %}
@@ -13,7 +13,7 @@ y    <div class="container-xxl">
             <div class="card-body">
               <!-- Logo -->
               <div class="app-brand justify-content-center">
-                <a href="index.html" class="app-brand-link gap-2">
+                <a href="{% url 'basic:home' %}" class="app-brand-link gap-2">
                   <span class="app-brand-logo demo">
                     <img src="{% static 'img/logo.png' %}" width="80%" alt="">
                   </span>
