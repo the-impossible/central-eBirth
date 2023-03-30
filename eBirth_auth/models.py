@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-
+from django.shortcuts import reverse
 import uuid
 
 # My app imports
@@ -59,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
     cert_no = models.CharField(max_length=10, db_index=True, unique=True, blank=True, null=True)
     email = models.CharField(max_length=100, db_index=True, unique=True, verbose_name='email address', blank=True, null=True)
-    pic = models.ImageField(null=True, blank=True, upload_to='uploads/')
+    pic = models.ImageField(null=True, blank=True, upload_to='uploads/', default='img/user.png')
 
     date_joined = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last_login', auto_now=True, null=True)
@@ -79,6 +79,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_hospital or self.is_staff or self.is_hospital_admin:
             return f'{self.email}'
         else:
+            if self.email:
+                return f'{self.email}'
+
             return f'{self.cert_no}'
 
     def has_perm(self, perm, obj=None):
@@ -87,6 +90,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
+    def get_absolute_url(self):
+        return reverse("reg:account_profile", kwargs={
+        'pk':self.user_id
+    })
+
     class Meta:
         db_table = 'Users'
         verbose_name_plural = 'Users'
+

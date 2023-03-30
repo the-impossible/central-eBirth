@@ -23,7 +23,7 @@
           <div data-i18n="Analytics">Dashboard</div>
         </a>
       </li>
-    {% if request.user.is_hospital %}
+    {% if request.user.is_hospital or request.user.is_hospital_admin %}
 
     <li class="menu-header small text-uppercase">
       <span class="menu-header-text">Birth Registration</span>
@@ -46,7 +46,17 @@
         </li>
       </ul>
     </li>
-      <!-- Components -->
+    {% else %}
+    <li class="menu-item">
+        <a href="{% url 'reg:certificate' request.user.user_id %}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-certification"></i>
+            <div data-i18n="Documentation">View Certificate</div>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if request.user.is_hospital %}
+    <!-- Components -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Administrators</span></li>
       <!-- User interface -->
     <li class="menu-item">
@@ -67,24 +77,26 @@
         </li>
     </ul>
     </li>
+    {% endif %}
 
     <!-- Misc -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Settings</span></li>
+    {% if request.user.is_hospital %}
     <li class="menu-item">
-    <a href="{% url 'reg:hospital_profile' request.user.user_id %}" class="menu-link"> <i class="menu-icon tf-icons bx bx-support"></i> <div data-i18n="Support">Hospital Profile</div></a>
+    <a href="{% url 'reg:hospital_profile' request.user.user_id %}" class="menu-link"> <i class="menu-icon tf-icons bx bx-building-house"></i> <div data-i18n="Support">Hospital Profile</div></a>
     </li>
+    {% endif %}
+
     <li class="menu-item">
-        <a href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/" target="_blank" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-file"></i>
+        <a href="{% url 'reg:account_profile' request.user.user_id %}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user-circle"></i>
             <div data-i18n="Documentation">Account Profile</div>
         </a>
     </li>
-    {% else %}
 
-    {% endif %}
     <li class="menu-item">
         <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#basicModal" target="_blank" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-file"></i>
+            <i class="menu-icon tf-icons bx bx-log-out-circle"></i>
             <div data-i18n="Documentation">Logout</div>
         </a>
     </li>

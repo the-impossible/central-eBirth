@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Birth Register{% endblock title %}
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        {% include 'partials/sidebar.html' %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+	        {% block nav %} {% include 'partials/auth_nav.html' %} {% endblock %}
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              {% include 'partials/messages.html' %}
+
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'auth:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active"><a>Birth Registration Record</a></li>
+              </ol>
+
+              <!-- Bootstrap Table with Header - Light -->
+              <div class="card">
+                <h5 class="card-header">Birth Registration Record</h5>
+                {% if object_list %}
+                <div class="table-responsive text-nowrap">
+                  <table class="table">
+                    <thead class="table-light">
+                      <tr>
+                        <th>S/N</th>
+                        <th>Certificate Num</th>
+                        <th>Child Name</th>
+                        <th>Father Name</th>
+                        <th>Mother Name</th>
+                        <th>Weight</th>
+                        <th class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+
+                      {% for object in object_list  %}
+                      <tr>
+                        <td><strong>{{forloop.counter}} </strong></td>
+                        <td><span class="badge bg-label-primary me-1"><a href="{% url 'reg:edit_birth_reg' object.pk %}">{{object.certificate_num}} </a></span></td>
+                        <td>{{object.child_name}}</td>
+                        <td>{{object.father_name}}</td>
+                        <td>{{object.mother_name}}</td>
+                        <td>{{object.weight}}</td>
+                        <td>
+                          <a class="btn btn-sm btn-info" href="{% url 'reg:certificate' object.pk %}"><i class="bx bx-doc me-1"></i> Certificate</a>
+                          <a class="btn btn-sm btn-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#{{object.certificate_num}}"><i class="bx bx-trash me-1"></i> Delete</a>
+                          <div class="modal fade" id="{{object.certificate_num}}" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Delete {{object.child_name}} birth Registration</h5>
+                                        <button type="button" class="close btn btn-secondary" data-bs-dismiss="modal"><span>×</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">Are you sure you want to delete birth registration for {{object.child_name}}?.</div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                                        <form action="{% url 'reg:delete_birth_reg' object.pk %}" method="POST">
+                                          <input type="hidden" name="cert_no" value="{{object.certificate_num}}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-warning btn-block">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                {% else %}
+                <div class="row mt-3">
+                  <div class="d-grid gap-2 col-lg-4 mx-auto mb-4">
+                    <p class="text-center">No result found for: <b>{{query}}</b> </p>
+                    <a href="{% url 'reg:birth_reg' %}" class="btn btn-primary btn-small">Add Birth Registration</a>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+              <!-- Bootstrap Table with Header - Light -->
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            {% include 'partials/auth_footer.html' %}
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+{% include 'partials/auth_script.html' %}
+
+{% endblock body %}

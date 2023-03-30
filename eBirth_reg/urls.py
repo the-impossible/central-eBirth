@@ -15,6 +15,9 @@ from eBirth_reg.views import (
 
     EditHospitalProfileView,
     AccountProfileView,
+    ChangePasswordView,
+
+    SearchCertificateView,
 )
 
 app_name = "reg"
@@ -34,5 +37,9 @@ urlpatterns = [
 
     path('hospital_profile/<str:pk>', EditHospitalProfileView.as_view(), name="hospital_profile"),
     path('account_profile/<str:pk>', AccountProfileView.as_view(), name="account_profile"),
+
+    path('search', SearchCertificateView.as_view(), name="search"),
+
+    path('change_password/<str:pk>', ChangePasswordView.as_view(), name="change_password"),
 ]
 

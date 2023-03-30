@@ -42,7 +42,16 @@
                       <small class="text-muted float-end">edit registration</small>
                     </div>
                     <div class="card-body">
-                      <form method="POST">
+
+                      <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
+                        {% if object.pic %}
+                            <img src=" {{ object.pic.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                            {% else %}
+                            <p class="badge bg-label-warning">No Profile Image upload!</p>
+                        {% endif %}
+                      </div>
+
+                      <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row mb-3">
                           <label class="col-sm-2 col-form-label" for="basic-icon-default-fullname">Email <span class="asteriskField">*</span></label>
@@ -56,6 +65,23 @@
                             {% if form.email.errors %}
                               <div class="alert alert-danger mt-2" role="alert">
                                 {{ form.email.errors }}
+                              </div>
+                            {% endif %}
+                          </div>
+                        </div>
+
+                        <div class="row mb-3">
+                          <label class="col-sm-2 col-form-label" for="basic-icon-default-fullname">Profile Picture </label>
+                          <div class="col-sm-10">
+                            <div class="input-group input-group-merge">
+                              <span id="basic-icon-default-fullname2" class="input-group-text"
+                                ><i class="bx bx-user"></i
+                              ></span>
+                              {{ form.pic }}
+                            </div>
+                            {% if form.pic.errors %}
+                              <div class="alert alert-danger mt-2" role="alert">
+                                {{ form.pic.errors }}
                               </div>
                             {% endif %}
                           </div>

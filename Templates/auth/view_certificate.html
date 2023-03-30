@@ -27,7 +27,12 @@
 
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'auth:dashboard' %}">Dashboard</a></li>
+
+                {% if request.user.hospital or request.user.hospital_admin %}
+
                 <li class="breadcrumb-item active"><a href="{% url 'reg:manage_birth_reg' %}">All Birth Registrations</a></li>
+                {% endif %}
+
                 <li class="breadcrumb-item active"><a>Certificate</a></li>
               </ol>
 

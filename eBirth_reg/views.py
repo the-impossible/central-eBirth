@@ -1,8 +1,9 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.messages.views import SuccessMessageMixin
 from random import choice, randint, shuffle
 from django.contrib import messages
+from django.contrib.auth.hashers import check_password
 
 # My App imports
 from eBirth_reg.models import (
@@ -17,6 +18,7 @@ from eBirth_auth.models import (
 from eBirth_auth.forms import (
     UserRegistrationForm,
     EditAdminForm,
+    ChangePassForm,
 )
 
 from eBirth_reg.forms import (
@@ -32,10 +34,10 @@ def _cert_no():
     letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-    cert_list = []
+    cert_list = ['M','H','S','-']
 
-    [cert_list.append(choice(letters)) for _ in range(6)]
-    [cert_list.append(choice(numbers)) for _ in range(4)]
+    [cert_list.append(choice(letters)) for _ in range(3)]
+    [cert_list.append(choice(numbers)) for _ in range(3)]
 
     shuffle(list(cert_list))
     cert_no = ''.join(cert_list)
@@ -135,7 +137,7 @@ class ManageAdministratorsView(ListView):
 
     def get_queryset(self):
         hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
-        return HospitalAdminProfile.objects.filter(hospital_id=hospital)
+        return HospitalAdminProfile.objects.filter(hospital_id=hospital).exclude(user_id=self.request.user)
 
 class DeleteAdministratorView(SuccessMessageMixin, DeleteView):
     model = User
@@ -159,6 +161,17 @@ class CertificateView(SuccessMessageMixin, DetailView):
 
     template_name = "auth/view_certificate.html"
 
+    def get_object(self):
+        try:
+            return BirthRegistration.objects.get(birth_id=self.kwargs['pk'])
+        except BirthRegistration.DoesNotExist:
+            try:
+                return BirthRegistration.objects.get(user_id=self.kwargs['pk'])
+            except BirthRegistration.DoesNotExist:
+                messages.error(request, "Failed in getting certificate!")
+                return redirect('auth:dashboard')
+            return redirect('auth:dashboard')
+
 class EditHospitalProfileView(SuccessMessageMixin, UpdateView):
     model = HospitalProfile
     form_class = HospitalProfileForm
@@ -170,14 +183,51 @@ class EditHospitalProfileView(SuccessMessageMixin, UpdateView):
     def get_object(self):
         return HospitalProfile.objects.get(hospital_id=HospitalProfile.objects.get(user_id=self.kwargs['pk']).hospital_id)
 
-
 class AccountProfileView(SuccessMessageMixin, UpdateView):
-    model = HospitalProfile
-    form_class = HospitalProfileForm
-    success_message = "Hospital profile has been updated successfully!"
-    hospital_id = None
+    model = User
+    form_class = EditAdminForm
+    success_message = "Account has been updated successfully!"
 
-    template_name = "auth/hospital_profile.html"
+    template_name = "auth/account_profile.html"
 
-    def get_object(self):
-        return HospitalProfile.objects.get(hospital_id=HospitalProfile.objects.get(user_id=self.kwargs['pk']).hospital_id)
+class SearchCertificateView(ListView):
+    model = BirthRegistration
+    template_name = "auth/certificate_search.html"
+
+    def get_queryset(self):
+        qs = self.request.GET.get('qs')
+        place_of_birth = HospitalProfile.objects.get(user_id=self.request.user.user_id)
+        result = (
+            BirthRegistration.objects.filter(certificate_num=qs, place_of_birth=place_of_birth) |
+            BirthRegistration.objects.filter(child_name__icontains=qs, place_of_birth=place_of_birth) |
+            BirthRegistration.objects.filter(father_name__icontains=qs, place_of_birth=place_of_birth) |
+            BirthRegistration.objects.filter(mother_name__icontains=qs, place_of_birth=place_of_birth) |
+            BirthRegistration.objects.filter(date_time__icontains=qs, place_of_birth=place_of_birth)
+        )
+        return result
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchCertificateView, self).get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('qs')
+        return context
+
+class ChangePasswordView(SuccessMessageMixin, UpdateView):
+    model = User
+    form_class = ChangePassForm
+    success_message = "password has been updated successfully!"
+    template_name = "auth/change_password.html"
+
+    def form_valid(self, form):
+        old_pass = form.cleaned_data.get('old_pass')
+        user_pass = self.request.user.password
+
+        if check_password(old_pass, user_pass):
+            form.instance.set_password(form.cleaned_data.get('new_pass'))
+            return super().form_valid(form)
+
+        messages.error(self.request, "Incorrect current password!")
+        return super().form_invalid(form)
+
+
+    def get_success_url(self):
+        return reverse("auth:login")

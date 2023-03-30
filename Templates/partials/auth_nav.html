@@ -11,13 +11,23 @@
       <!-- Search -->
       <div class="navbar-nav align-items-center">
         <div class="nav-item d-flex align-items-center">
-          <i class="bx bx-search fs-4 lh-0"></i>
-          <input
-            type="text"
-            class="form-control border-0 shadow-none"
-            placeholder="Search..."
-            aria-label="Search..."
-          />
+
+            {% if request.user.is_hospital or request.user.is_hospital_admin %}
+
+            <i class="bx bx-search fs-4 lh-0"></i>
+            <form action="{% url 'reg:search' %}" method="get" id="search">
+              <input type="search" class="form-control border-0 shadow-none" placeholder="Search Certificate" aria-label="Search..." name="qs" value="{{query}}" />
+          </form>
+          <script>
+              document.getElementById("qs").addEventListener("keydown", (e) => {
+                  if(e.key == "Enter"){
+                      e.preventDefault();
+                      document.getElementById('search').submit();
+                  }
+              })
+          </script>
+            {% endif %}
+
         </div>
       </div>
       <!-- /Search -->
@@ -26,21 +36,31 @@
         <li class="nav-item navbar-dropdown dropdown-user dropdown">
           <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
             <div class="avatar avatar-online">
-              <img src="{% static 'auth/assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+
+                <img src="{{ request.user.pic.url }}" alt class="w-px-40 h-auto rounded-circle" />
+
             </div>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item">
                 <div class="d-flex">
                   <div class="flex-shrink-0 me-3">
                     <div class="avatar avatar-online">
-                      <img src="{% static 'auth/assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                      <img src="{{ request.user.pic.url }}" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </div>
                   <div class="flex-grow-1">
                     <span class="fw-semibold d-block">{{request.user}}</span>
-                    <small class="text-muted">Admin</small>
+                    <small class="text-muted">
+                        {% if request.user.is_hospital %}
+                            Hospital
+                        {% elif request.user.is_hospital_admin %}
+                            Hospital Admin
+                        {% else %}
+                            User
+                        {% endif %}
+                    </small>
                   </div>
                 </div>
               </a>
@@ -49,17 +69,21 @@
               <div class="dropdown-divider"></div>
             </li>
             <li>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="{% url 'reg:account_profile' request.user.user_id %}">
                 <i class="bx bx-user me-2"></i>
                 <span class="align-middle">My Profile</span>
               </a>
             </li>
+
+            {% if request.user.is_hospital %}
             <li>
-              <a class="dropdown-item" href="#">
-                <i class="bx bx-cog me-2"></i>
-                <span class="align-middle">Settings</span>
+              <a class="dropdown-item" href="{% url 'reg:hospital_profile' request.user.user_id %}">
+                <i class="bx bx-building-house me-2"></i>
+                <span class="align-middle">Hospital Profile</span>
               </a>
             </li>
+            {% endif %}
+
             <li>
               <div class="dropdown-divider"></div>
             </li>
