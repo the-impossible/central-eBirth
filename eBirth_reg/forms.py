@@ -34,6 +34,7 @@ class BirthRegistrationForm(forms.ModelForm):
         attrs={
             'class':'form-control',
             'type':'number',
+            'step':'any',
         }
     ))
 

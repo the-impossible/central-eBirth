@@ -37,34 +37,58 @@
               </ol>
 
               <!-- Bootstrap Table with Header - Light -->
-              <div class="col-md-6 mx-auto">
-                <div class="card bg-primary">
-                  <h4 class="card-header text-center text-white">MINISTRY OF HEALTH SERVICES</h4>
-                  <div class="card-body bg-white">
-                    <h5 class="text-center text-uppercase pt-2">{{object.place_of_birth}}</h5>
-                    <h6 class="text-center">BIRTH CERTIFICATE</h6>
-                    <hr>
-                    <p> <b>CERTIFICATE NO:</b> &nbsp; &nbsp; {{ object.certificate_num }}</p>
-                    <p> <b>MOTHER'S NAME:</b> &nbsp; {{ object.mother_name }}</p>
-                    <p> <b>FATHER'S NAME:</b>&nbsp; &nbsp; {{ object.father_name }}</p>
-                    <p> <b>NAME OF CHILD:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ object.child_name }}</p>
-                    <p> <b>WEIGHT AT BIRTH:</b>&nbsp; {{ object.weight }} KG</p>
-                    <p> <b>SEX: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</b> {{ object.gender }}</p>
-                    <p> <b>DATE OF BIRTH:</b>&nbsp; &nbsp; &nbsp; {{ object.date_time }}</p>
-                    <hr>
-                    <div class="row">
-                      <div class="col-12">
-                        <div class="text-center">
-                          <img src="{{ object.place_of_birth.pic.url }}" width="100" alt="">
-                          <p><b>SIGNED</b></p>
-                        </div>
-                      </div>
-                    </div>
+              <div class="row bg-white" id="content">
+                <div class="col-10 mx-auto">
+                  <div class="text-center">
+                    <img src="{% static 'img/coat.jpg' %}" alt="" width="200">
+                    <h5>FEDERAL REPUBLIC OF NIGERIA</h5>
+                    <h5>NATIONAL POPULATION COMMISSION</h5>
+                    <br>
+                    <h6>CERTIFICATE OF BIRTH</h6>
+                    <br>
+                    <p class="text-justify">Issued under the Births and Deaths etc (Compulsory Registration) Decree 1992</p>
+                    <p class="text-justify">Registration Centre <b>{{object.place_of_birth}}</b>  Certificate Number. No. <b>{{ object.certificate_num }}</b> </p>
+                    <br>
+                    <p>This is to certify that the birth, details of which are recorded herein, has been registered at the above-mentioned registration center</p>
                   </div>
+                </div>
+                <br>
+                <br>
+                <div class="row">
+                  <div class="col-1"></div>
+                  <div class="col-8">
+                    <ol>
+                      <li>&nbsp; &nbsp; <b>Full Name: </b> 	{{ object.father_name }} {{ object.child_name }}</li>
+                      <br>
+                      <li>&nbsp; &nbsp; <b>Sex: </b> 	{{ object.gender }}</li>
+                      <br>
+                      <li>&nbsp; &nbsp; <b>Date of Birth: </b> 	{{ object.date_time }}</li>
+                      <br>
+                      <li>&nbsp; &nbsp; <b>Weight at Birth: </b> 	{{ object.weight }}</li>
+                      <br>
+                      <li>&nbsp; &nbsp; <b>Full name of Father: </b> 	{{ object.father_name }}</li>
+                      <br>
+                      <li>&nbsp; &nbsp; <b>Full name of Mother: </b> 	{{ object.mother_name }}</li>
+                      <br>
+                      <li>&nbsp; &nbsp; <b>Full name of Mother: </b> 	{{ object.mother_name }}</li>
+                    </ol>
+                  </div>
+                  <div class="col-1"></div>
+                </div>
+                <div class="text-center mx-auto">
+                  <img src="{{ object.place_of_birth.pic.url }}" alt="" width="200">
+                  <p><b>SIGNED</b></p>
                 </div>
               </div>
               <!-- Bootstrap Table with Header - Light -->
+              <br>
+              <br>
 
+              <div class="row">
+                <div class="d-grid gap-2">
+                  <button class="btn btn-primary btn-lg" id="print">Print</button>
+                </div>
+              </div>
             </div>
             <!-- / Content -->
 
@@ -72,7 +96,6 @@
             {% include 'partials/auth_footer.html' %}
             <!-- / Footer -->
 
-            <div class="content-backdrop fade"></div>
           </div>
           <!-- Content wrapper -->
         </div>
