@@ -4,6 +4,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from random import choice, randint, shuffle
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
+from django.http import Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 # My App imports
 from eBirth_reg.models import (
@@ -30,11 +33,13 @@ DEFAULT_PASSWORD = '12345678'
 
 # Create your views here.
 
+
 def _cert_no():
-    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+               'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-    cert_list = ['M','H','S','-']
+    cert_list = ['M', 'H', 'S', '-']
 
     [cert_list.append(choice(letters)) for _ in range(3)]
     [cert_list.append(choice(numbers)) for _ in range(3)]
@@ -43,6 +48,7 @@ def _cert_no():
     cert_no = ''.join(cert_list)
 
     return cert_no
+
 
 def generate_cert_no():
     exists = True
@@ -53,7 +59,8 @@ def generate_cert_no():
             exists = False
     return cert_no
 
-class BirthRegistrationView(SuccessMessageMixin, CreateView):
+
+class BirthRegistrationView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = BirthRegistration
     form_class = BirthRegistrationForm
     template_name = "auth/birth_reg.html"
@@ -64,13 +71,15 @@ class BirthRegistrationView(SuccessMessageMixin, CreateView):
 
     def form_valid(self, form):
 
-        admin_profile = HospitalAdminProfile.objects.filter(user_id=self.request.user)
+        admin_profile = HospitalAdminProfile.objects.filter(
+            user_id=self.request.user)
 
         if admin_profile.exists():
             hospital = admin_profile[0].hospital_id
             cert_no = generate_cert_no()
 
-            user_id = User.objects.create_user(password=DEFAULT_PASSWORD, cert_no=cert_no)
+            user_id = User.objects.create_user(
+                password=DEFAULT_PASSWORD, cert_no=cert_no)
 
             form.instance.user_id = user_id
             form.instance.place_of_birth = hospital
@@ -84,14 +93,27 @@ class BirthRegistrationView(SuccessMessageMixin, CreateView):
             messages.error(self.request, "Unable to get hospital profile!")
             return super().form_invalid(form)
 
-class ManageBirthRegistrationView(ListView):
+
+class ManageBirthRegistrationView(LoginRequiredMixin, ListView):
     template_name = "auth/manage_reg.html"
 
     def get_queryset(self):
-        hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
-        return BirthRegistration.objects.filter(place_of_birth=hospital)
+        try:
+            hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+            queryset = BirthRegistration.objects.filter(place_of_birth=hospital)
+            return queryset
+        except HospitalAdminProfile.DoesNotExist:
+            messages.error(self.request, "Contact Central e-Birth, hospital profile has not been fully updated!!, therefore birth-registration list can't be displayed")
+            return None
 
-class EditBirthRegistrationView(SuccessMessageMixin, UpdateView):
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset is None:
+            return redirect(reverse('auth:dashboard'))
+        return super().get(request, *args, **kwargs)
+
+
+class EditBirthRegistrationView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = BirthRegistration
     form_class = BirthRegistrationForm
     success_message = "Registration has been edited successfully!"
@@ -101,7 +123,8 @@ class EditBirthRegistrationView(SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse("reg:manage_birth_reg")
 
-class DeleteBirthRegistrationView(SuccessMessageMixin, DeleteView):
+
+class DeleteBirthRegistrationView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = BirthRegistration
     success_message = "Registration has been deleted successfully!"
 
@@ -114,7 +137,8 @@ class DeleteBirthRegistrationView(SuccessMessageMixin, DeleteView):
     def get_success_url(self):
         return reverse("reg:manage_birth_reg")
 
-class AdminRegistrationView(SuccessMessageMixin, CreateView):
+
+class AdminRegistrationView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = User
     form_class = UserRegistrationForm
     template_name = "auth/admin_reg.html"
@@ -125,28 +149,53 @@ class AdminRegistrationView(SuccessMessageMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.is_hospital_admin = True
-        form = super().form_valid(form)
 
-        hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
-        HospitalAdminProfile.objects.create(user_id=self.object, hospital_id=hospital)
+        try:
+            hospital = HospitalAdminProfile.objects.get(
+                user_id=self.request.user).hospital_id
 
-        return form
+            form = super().form_valid(form)
+            
+            HospitalAdminProfile.objects.create(
+                user_id=self.object, hospital_id=hospital)
 
-class ManageAdministratorsView(ListView):
+
+            return form
+        except HospitalAdminProfile.DoesNotExist:
+
+            messages.error(
+                self.request, "Contact Central e-Birth, hospital profile has not been updated!!")
+            return redirect('auth:dashboard')
+
+
+class ManageAdministratorsView(LoginRequiredMixin, ListView):
     template_name = "auth/manage_admin.html"
 
     def get_queryset(self):
-        hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
-        return HospitalAdminProfile.objects.filter(hospital_id=hospital).exclude(user_id=self.request.user)
+        try:
+            hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+            queryset = HospitalAdminProfile.objects.filter(hospital_id=hospital).exclude(user_id=self.request.user)
+            return queryset
+        except HospitalAdminProfile.DoesNotExist:
+            messages.error(self.request, "Contact Central e-Birth, hospital profile has not been fully updated!!, therefore admin list can't be displayed")
+            return None
 
-class DeleteAdministratorView(SuccessMessageMixin, DeleteView):
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset is None:
+            return redirect(reverse('auth:dashboard'))
+        return super().get(request, *args, **kwargs)
+
+
+class DeleteAdministratorView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = User
     success_message = "Administrator has been deleted!"
 
     def get_success_url(self):
         return reverse("reg:manage_admin")
 
-class EditAdminView(SuccessMessageMixin, UpdateView):
+
+class EditAdminView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = User
     form_class = EditAdminForm
     success_message = "Admin account has been edited successfully!"
@@ -156,7 +205,8 @@ class EditAdminView(SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse("reg:manage_admin")
 
-class CertificateView(SuccessMessageMixin, DetailView):
+
+class CertificateView(LoginRequiredMixin, SuccessMessageMixin, DetailView):
     model = BirthRegistration
 
     template_name = "auth/view_certificate.html"
@@ -168,11 +218,19 @@ class CertificateView(SuccessMessageMixin, DetailView):
             try:
                 return BirthRegistration.objects.get(user_id=self.kwargs['pk'])
             except BirthRegistration.DoesNotExist:
-                messages.error(request, "Failed in getting certificate!")
-                return redirect('auth:dashboard')
+                raise Http404()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except Http404:
+            messages.error(self.request, "Failed in getting certificate!")
             return redirect('auth:dashboard')
 
-class EditHospitalProfileView(SuccessMessageMixin, UpdateView):
+        return self.render_to_response(self.get_context_data())
+
+
+class EditHospitalProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = HospitalProfile
     form_class = HospitalProfileForm
     success_message = "Hospital profile has been updated successfully!"
@@ -180,29 +238,43 @@ class EditHospitalProfileView(SuccessMessageMixin, UpdateView):
 
     template_name = "auth/hospital_profile.html"
 
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except HospitalProfile.DoesNotExist:
+            messages.error(
+                self.request, "Contact Central e-Birth, hospital profile has not been updated!!")
+            return redirect('auth:dashboard')
+
+        return self.render_to_response(self.get_context_data())
+
     def get_object(self):
         return HospitalProfile.objects.get(hospital_id=HospitalProfile.objects.get(user_id=self.kwargs['pk']).hospital_id)
 
-class AccountProfileView(SuccessMessageMixin, UpdateView):
+
+class AccountProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = User
     form_class = EditAdminForm
     success_message = "Account has been updated successfully!"
 
     template_name = "auth/account_profile.html"
 
-class SearchCertificateView(ListView):
+
+class SearchCertificateView(LoginRequiredMixin, ListView):
     model = BirthRegistration
     template_name = "auth/certificate_search.html"
 
     def get_queryset(self):
         qs = self.request.GET.get('qs')
-        place_of_birth = HospitalProfile.objects.get(user_id=self.request.user.user_id)
+        place_of_birth = HospitalProfile.objects.get(
+            user_id=self.request.user.user_id)
         result = (
             BirthRegistration.objects.filter(certificate_num=qs, place_of_birth=place_of_birth) |
             BirthRegistration.objects.filter(child_name__icontains=qs, place_of_birth=place_of_birth) |
             BirthRegistration.objects.filter(father_name__icontains=qs, place_of_birth=place_of_birth) |
             BirthRegistration.objects.filter(mother_name__icontains=qs, place_of_birth=place_of_birth) |
-            BirthRegistration.objects.filter(date_time__icontains=qs, place_of_birth=place_of_birth)
+            BirthRegistration.objects.filter(
+                date_time__icontains=qs, place_of_birth=place_of_birth)
         )
         return result
 
@@ -211,7 +283,8 @@ class SearchCertificateView(ListView):
         context['query'] = self.request.GET.get('qs')
         return context
 
-class ChangePasswordView(SuccessMessageMixin, UpdateView):
+
+class ChangePasswordView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = User
     form_class = ChangePassForm
     success_message = "password has been updated successfully!"
@@ -227,7 +300,6 @@ class ChangePasswordView(SuccessMessageMixin, UpdateView):
 
         messages.error(self.request, "Incorrect current password!")
         return super().form_invalid(form)
-
 
     def get_success_url(self):
         return reverse("auth:login")

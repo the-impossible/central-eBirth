@@ -5,7 +5,7 @@ from django.contrib.auth.backends import ModelBackend, BaseBackend
 class CertModelBackend(BaseBackend):
     """
     This is a Backed that allows authentication
-    with cert_no address or certNo.
+    with email address or certNo.
     """
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:

@@ -69,7 +69,7 @@ class HospitalProfileForm(forms.ModelForm):
         }
     ))
 
-    pic = forms.ImageField(required=False, widget=forms.FileInput(
+    signature = forms.ImageField(required=False, widget=forms.FileInput(
         attrs={
                 'class':'form-control',
                 'type':'file',
@@ -79,4 +79,4 @@ class HospitalProfileForm(forms.ModelForm):
 
     class Meta:
         model = HospitalProfile
-        fields = ('hospital_name', 'hospital_address', 'pic')
+        fields = ('hospital_name', 'hospital_address', 'signature')

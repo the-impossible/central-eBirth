@@ -43,8 +43,8 @@
                     <!-- Account -->
                     <div class="card-body">
                       <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        {% if object.pic %}
-                        <img src=" {{ object.pic.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                        {% if object.signature %}
+                        <img src=" {{ object.signature.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
                         {% else %}
                         <p class="badge bg-label-warning">No signature upload!</p>
                         {% endif %}
@@ -89,10 +89,10 @@
 
                           <div class="mb-3 col-md-6">
                             <label for="lastName" class="form-label">Signature (Allowed: JPG or PNG) </label>
-                            {{ form.pic}}
-                            {% if form.pic.errors %}
+                            {{ form.signature}}
+                            {% if form.signature.errors %}
                               <div class="alert alert-danger mt-2" role="alert">
-                                {{ form.pic.errors }}
+                                {{ form.signature.errors }}
                               </div>
                             {% endif %}
 

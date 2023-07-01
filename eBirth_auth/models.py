@@ -6,10 +6,12 @@ import uuid
 # My app imports
 
 # Create your models here.
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email=None, cert_no=None, password=None):
 
-        #creates a user with the parameters
+        # creates a user with the parameters
         if not email and not cert_no:
             raise ValueError('Cert_no or Email address is required!')
 
@@ -18,16 +20,16 @@ class UserManager(BaseUserManager):
 
         if cert_no and email:
             user = self.model(
-                email = self.normalize_email(email),
-                cert_no = cert_no.upper().strip(),
+                email=self.normalize_email(email),
+                cert_no=cert_no.upper().strip(),
             )
         elif cert_no is not None:
             user = self.model(
-                cert_no = cert_no.upper().strip(),
+                cert_no=cert_no.upper().strip(),
             )
         elif email is not None:
             user = self.model(
-                email = self.normalize_email(email),
+                email=self.normalize_email(email),
             )
 
         user.set_password(password)
@@ -44,7 +46,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Password should not be empty')
 
         user = self.create_user(
-            email = self.normalize_email(email),
+            email=self.normalize_email(email),
             password=password,
         )
 
@@ -55,14 +57,21 @@ class UserManager(BaseUserManager):
 
         return user
 
-class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-    cert_no = models.CharField(max_length=10, db_index=True, unique=True, blank=True, null=True)
-    email = models.CharField(max_length=100, db_index=True, unique=True, verbose_name='email address', blank=True, null=True)
-    pic = models.ImageField(null=True, blank=True, upload_to='uploads/', default='img/user.png')
 
-    date_joined = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)
-    last_login = models.DateTimeField(verbose_name='last_login', auto_now=True, null=True)
+class User(AbstractBaseUser, PermissionsMixin):
+    user_id = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+    cert_no = models.CharField(
+        max_length=10, db_index=True, unique=True, blank=True, null=True)
+    email = models.CharField(max_length=100, db_index=True, unique=True,
+                             verbose_name='email address', blank=True, null=True)
+    pic = models.ImageField(null=True, blank=True,
+                            upload_to='uploads/', default='img/user.png')
+
+    date_joined = models.DateTimeField(
+        verbose_name='date_joined', auto_now_add=True)
+    last_login = models.DateTimeField(
+        verbose_name='last_login', auto_now=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -92,10 +101,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_absolute_url(self):
         return reverse("reg:account_profile", kwargs={
-        'pk':self.user_id
-    })
+            'pk': self.user_id
+        })
 
     class Meta:
         db_table = 'Users'
         verbose_name_plural = 'Users'
-
