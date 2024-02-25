@@ -1,7 +1,14 @@
+from django.contrib.auth.models import User
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from eBirth_auth.models import User
+from django import forms
+
+
+# Register your User model with the custom UserAdmin
 
 
 class UserAdmin(BaseUserAdmin):

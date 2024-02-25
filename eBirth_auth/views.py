@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # My app imports
 
 # Create your views here.
-class DashboardView(TemplateView):
+class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "auth/dashboard.html"
 
 class LoginView(View):

@@ -44,9 +44,9 @@
                     <div class="card-body">
                       <div class="d-flex align-items-start align-items-sm-center gap-4">
                         {% if object.signature %}
-                        <img src=" {{ object.signature.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                        {% comment %} <img src=" {{ object.signature.url }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" /> {% endcomment %}
                         {% else %}
-                        <p class="badge bg-label-warning">No signature upload!</p>
+                        <p class="badge bg-label-warning">No signature upload contact system admin!</p>
                         {% endif %}
                         {% comment %}
                         <div class="button-wrapper">
@@ -77,7 +77,7 @@
                       <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
-                          <div class="mb-3 col-md-6">
+                          <div class="mb-3 col-md-12">
                             <label for="firstName" class="form-label">Hospital Name  <span class="asteriskField">*</span> </label>
                             {{ form.hospital_name}}
                             {% if form.hospital_name.errors %}
@@ -87,7 +87,7 @@
                             {% endif %}
                           </div>
 
-                          <div class="mb-3 col-md-6">
+                          {% comment %} <div class="mb-3 col-md-6">
                             <label for="lastName" class="form-label">Signature (Allowed: JPG or PNG) </label>
                             {{ form.signature}}
                             {% if form.signature.errors %}
@@ -96,7 +96,7 @@
                               </div>
                             {% endif %}
 
-                          </div>
+                          </div> {% endcomment %}
 
                           <div class="mb-3 col-md-12">
                             <label for="lastName" class="form-label">hospital Address  <span class="asteriskField">*</span></label>

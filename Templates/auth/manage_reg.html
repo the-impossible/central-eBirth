@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% block title %}Birth Register{% endblock title %}
+{% block title %}Register{% endblock title %}
 {% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
 
 {% block body %}
@@ -27,12 +27,12 @@
 
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'auth:dashboard' %}">Dashboard</a></li>
-                <li class="breadcrumb-item active"><a href="{% url 'reg:manage_birth_reg' %}">Manage Birth Registration</a></li>
+                <li class="breadcrumb-item active"><a href="{% url 'reg:manage_birth_reg' %}">Manage Registrations</a></li>
               </ol>
 
               <!-- Bootstrap Table with Header - Light -->
               <div class="card">
-                <h5 class="card-header">Manage Birth Registration</h5>
+                <h5 class="card-header">Manage Registrations</h5>
                 {% if object_list %}
                 <div class="table-responsive text-nowrap">
                   <table class="table">

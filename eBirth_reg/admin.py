@@ -21,7 +21,7 @@ class HospitalProfileAdmin(admin.ModelAdmin):
     fieldsets = ()
 
 
-class HospitalProfileAdmin(admin.ModelAdmin):
+class HospitalAdminProfileAdmin(admin.ModelAdmin):
 
     list_display = ('user_id', 'hospital_id')
     search_fields = ('hospital_id__hospital_name', 'user_id__email')
@@ -46,6 +46,6 @@ class BirthRegistrationAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(HospitalProfile, HospitalProfileAdmin)
-admin.site.register(HospitalAdminProfile, HospitalProfileAdmin)
-admin.site.register(BirthRegistration, BirthRegistrationAdmin)
+admin.site.register(HospitalAdminProfile, HospitalAdminProfileAdmin)
+# admin.site.register(BirthRegistration, BirthRegistrationAdmin)
 admin.site.register(Gender)

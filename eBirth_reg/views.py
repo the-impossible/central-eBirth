@@ -71,40 +71,62 @@ class BirthRegistrationView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
 
     def form_valid(self, form):
 
-        admin_profile = HospitalAdminProfile.objects.filter(
-            user_id=self.request.user)
+        place_of_birth = None
 
-        if admin_profile.exists():
-            hospital = admin_profile[0].hospital_id
+        try:
+            place_of_birth = HospitalProfile.objects.get(
+                user_id=self.request.user)
+
+        except HospitalProfile.DoesNotExist:
+            admin_profile = HospitalAdminProfile.objects.filter(
+                user_id=self.request.user)
+
+            if admin_profile.exists():
+                place_of_birth = admin_profile[0].hospital_id
+
+            else:
+                messages.error(self.request, "Unable to get hospital profile!")
+                return super().form_invalid(form)
+        finally:
+
             cert_no = generate_cert_no()
 
             user_id = User.objects.create_user(
                 password=DEFAULT_PASSWORD, cert_no=cert_no)
 
             form.instance.user_id = user_id
-            form.instance.place_of_birth = hospital
+            form.instance.place_of_birth = place_of_birth
             form.instance.certificate_num = cert_no
 
             self.success_message = f"Birth Registration Successful with certificate No: {cert_no}"
 
             return super().form_valid(form)
 
-        else:
-            messages.error(self.request, "Unable to get hospital profile!")
-            return super().form_invalid(form)
-
 
 class ManageBirthRegistrationView(LoginRequiredMixin, ListView):
     template_name = "auth/manage_reg.html"
 
     def get_queryset(self):
+        hospital = None
+
         try:
-            hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
-            queryset = BirthRegistration.objects.filter(place_of_birth=hospital)
+            hospital = HospitalProfile.objects.get(
+                user_id=self.request.user).hospital_id
+
+        except HospitalProfile.DoesNotExist:
+
+            try:
+                hospital = HospitalAdminProfile.objects.get(
+                    user_id=self.request.user).hospital_id
+            except HospitalAdminProfile.DoesNotExist:
+                messages.error(
+                    self.request, "Contact Central e-Birth, profile doesn't exist!!, therefore birth-registration list can't be displayed")
+                return None
+
+        finally:
+            queryset = BirthRegistration.objects.filter(
+                place_of_birth=hospital)
             return queryset
-        except HospitalAdminProfile.DoesNotExist:
-            messages.error(self.request, "Contact Central e-Birth, hospital profile has not been fully updated!!, therefore birth-registration list can't be displayed")
-            return None
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -151,17 +173,21 @@ class AdminRegistrationView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
         form.instance.is_hospital_admin = True
 
         try:
-            hospital = HospitalAdminProfile.objects.get(
-                user_id=self.request.user).hospital_id
+            hospital = HospitalProfile.objects.get(
+                user_id=self.request.user)
+
+            print(f'hospital: {hospital}')
+
+            # hospital = HospitalAdminProfile.objects.get(
+            #     user_id=self.request.user).hospital_id
 
             form = super().form_valid(form)
-            
+
             HospitalAdminProfile.objects.create(
                 user_id=self.object, hospital_id=hospital)
 
-
             return form
-        except HospitalAdminProfile.DoesNotExist:
+        except HospitalProfile.DoesNotExist:
 
             messages.error(
                 self.request, "Contact Central e-Birth, hospital profile has not been updated!!")
@@ -171,13 +197,31 @@ class AdminRegistrationView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
 class ManageAdministratorsView(LoginRequiredMixin, ListView):
     template_name = "auth/manage_admin.html"
 
+    # def get_queryset(self):
+    #     try:
+    #         hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+    #         queryset = HospitalAdminProfile.objects.filter(hospital_id=hospital).exclude(user_id=self.request.user)
+    #         return queryset
+    #     except HospitalAdminProfile.DoesNotExist:
+    #         messages.error(self.request, "Contact Central e-Birth, hospital profile has not been fully updated!!, therefore admin list can't be displayed")
+    #         return None
+
+    # def get(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     if queryset is None:
+    #         return redirect(reverse('auth:dashboard'))
+    #     return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         try:
-            hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
-            queryset = HospitalAdminProfile.objects.filter(hospital_id=hospital).exclude(user_id=self.request.user)
+            # hospital = HospitalAdminProfile.objects.get(user_id=self.request.user).hospital_id
+            hospital = HospitalProfile.objects.get(user_id=self.request.user)
+            queryset = HospitalAdminProfile.objects.filter(
+                hospital_id=hospital).exclude(user_id=self.request.user)
             return queryset
-        except HospitalAdminProfile.DoesNotExist:
-            messages.error(self.request, "Contact Central e-Birth, hospital profile has not been fully updated!!, therefore admin list can't be displayed")
+        except HospitalProfile.DoesNotExist:
+            messages.error(
+                self.request, "Contact Central e-Birth, hospital profile has not been fully updated!!, therefore admin list can't be displayed")
             return None
 
     def get(self, request, *args, **kwargs):
@@ -223,6 +267,9 @@ class CertificateView(LoginRequiredMixin, SuccessMessageMixin, DetailView):
     def get(self, request, *args, **kwargs):
         try:
             self.object = self.get_object()
+            if not self.object.place_of_birth.signature:
+                messages.error(self.request, "Hospital signature not updated!")
+                return redirect('auth:dashboard')
         except Http404:
             messages.error(self.request, "Failed in getting certificate!")
             return redirect('auth:dashboard')
@@ -266,8 +313,16 @@ class SearchCertificateView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = self.request.GET.get('qs')
-        place_of_birth = HospitalProfile.objects.get(
-            user_id=self.request.user.user_id)
+        try:
+            place_of_birth = HospitalProfile.objects.get(
+                user_id=self.request.user.user_id)
+        except HospitalProfile.DoesNotExist:
+            hospital_admin_profile = HospitalAdminProfile.objects.filter(
+                user_id=self.request.user)
+            if hospital_admin_profile:
+                hospital_profile = HospitalProfile.objects.get(hospital_id=hospital_admin_profile[0].hospital_id.hospital_id).user_id
+                place_of_birth = HospitalProfile.objects.get(
+                    user_id=hospital_profile.user_id)
         result = (
             BirthRegistration.objects.filter(certificate_num=qs, place_of_birth=place_of_birth) |
             BirthRegistration.objects.filter(child_name__icontains=qs, place_of_birth=place_of_birth) |

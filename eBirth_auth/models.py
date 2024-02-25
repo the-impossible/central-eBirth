@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.shortcuts import reverse
 import uuid
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 # My app imports
 
@@ -103,6 +105,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         return reverse("reg:account_profile", kwargs={
             'pk': self.user_id
         })
+
+    def clean(self):
+        if self.email != None:
+            try:
+                validate_email(self.email)
+            except ValidationError as e:
+                raise ValidationError('Invalid Email!')
 
     class Meta:
         db_table = 'Users'
